@@ -86,7 +86,7 @@ class Generator(chainer.Chain):
         batchsize = len(z)
 
         h = F.reshape(F.relu(self.bg_bn0(self.bg_l0(z))),
-                         (batchsize, self.ch, self.bottom_width, self.bottom_width))
+                      (batchsize, self.ch, self.bottom_width, self.bottom_width))
         h = self.bg_block1(h)
         h = self.bg_block2(h)
         h = self.bg_block3(h)
@@ -112,10 +112,13 @@ class Discriminator(chainer.Chain):
         super(Discriminator, self).__init__()
         with self.init_scope():
             self.c0 = L.ConvolutionND(3, 3, ch // 8, ksize=4, stride=2, pad=1)
-            self.c1 = L.ConvolutionND(3, ch // 8, ch // 4, ksize=4, stride=2, pad=1)
-            self.c2 = L.ConvolutionND(3, ch // 4, ch // 2, ksize=4, stride=2, pad=1)
+            self.c1 = L.ConvolutionND(
+                3, ch // 8, ch // 4, ksize=4, stride=2, pad=1)
+            self.c2 = L.ConvolutionND(
+                3, ch // 4, ch // 2, ksize=4, stride=2, pad=1)
             self.c3 = L.ConvolutionND(3, ch // 2, ch, ksize=4, stride=2, pad=1)
-            self.c4 = L.ConvolutionND(3, ch, ch, ksize=(2, 4, 4), stride=2, pad=0)
+            self.c4 = L.ConvolutionND(
+                3, ch, ch, ksize=(2, 4, 4), stride=2, pad=0)
             self.l5 = L.Linear(ch, 1)
             self.bn1 = L.BatchNormalization(ch // 4)
             self.bn2 = L.BatchNormalization(ch // 2)

@@ -1,7 +1,6 @@
 import argparse
 import os
 import shutil
-import re
 
 import ffmpy
 
@@ -29,11 +28,13 @@ def image2video(in_file, out_file, start_number):
             '-s', '64x64']})
     ff.run()
 
+
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument('input', help='Directory of input video files.')
     parser.add_argument('output', help='Directory of output video files.')
-    parser.add_argument('-t', '--tmp', default='/tmp', help='Temporary directory')
+    parser.add_argument('-t', '--tmp', default='/tmp',
+                        help='Temporary directory')
     args = parser.parse_args()
 
     if not os.path.isdir(args.output):
