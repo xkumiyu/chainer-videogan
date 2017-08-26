@@ -39,64 +39,70 @@ class Generator(chainer.Chain):
         self.ch = ch
         self.bottom_time = bottom_time
         self.bottom_width = bottom_width
-        # TODO: 第1層のksizeを2x4x4に
 
         with self.init_scope():
-            self.bg_l = L.Linear(
+            self.fg_l0 = L.Linear(
+                self.noise_dim, self.bottom_time * self.bottom_width * self.bottom_width * self.ch)
+            self.fg_bn0 = L.BatchNormalization(
+                self.bottom_time * self.bottom_width * self.bottom_width * self.ch)
+            self.fg_block1 = Block3D(ch, ch // 2, ksize=(2, 4, 4))
+            self.fg_block2 = Block3D(ch // 2, ch // 4)
+            self.fg_block3 = Block3D(ch // 4, ch // 8)
+            self.fg_dc4 = L.DeconvolutionND(
+                3, ch // 8, 3, ksize=4, stride=2, pad=1)
+            self.m_dc4 = L.DeconvolutionND(
+                3, ch // 8, 1, ksize=4, stride=2, pad=1)
+
+            self.bg_l0 = L.Linear(
                 self.noise_dim, self.bottom_width * self.bottom_width * self.ch)
-            self.bg_bn = L.BatchNormalization(
+            self.bg_bn0 = L.BatchNormalization(
                 self.bottom_width * self.bottom_width * self.ch)
             self.bg_block1 = Block2D(ch // 2)
             self.bg_block2 = Block2D(ch // 4)
             self.bg_block3 = Block2D(ch // 8)
-            self.bg_dc = L.Deconvolution2D(
+            self.bg_dc4 = L.Deconvolution2D(
                 ch // 8, 3, ksize=4, stride=2, pad=1)
-
-            self.fg_l = L.Linear(
-                self.noise_dim, self.bottom_time * self.bottom_width * self.bottom_width * self.ch)
-            self.fg_bn = L.BatchNormalization(
-                self.bottom_time * self.bottom_width * self.bottom_width * self.ch)
-            self.fg_block1 = Block3D(ch, ch // 2)
-            self.fg_block2 = Block3D(ch // 2, ch // 4)
-            self.fg_block3 = Block3D(ch // 4, ch // 8)
-            self.fg_dc = L.DeconvolutionND(
-                3, ch // 8, 3, ksize=4, stride=2, pad=1)
-
-            self.m_dc = L.DeconvolutionND(
-                3, ch // 8, 1, ksize=4, stride=2, pad=1)
 
     def make_noize(self, batchsize):
         return np.random.randn(batchsize * self.noise_dim)\
             .reshape(batchsize, self.noise_dim).astype(np.float32)
 
-    def __call__(self, z):
+    def foreground(self, z):
         batchsize = len(z)
-        # Foreground
-        fg_h = F.reshape(
-            F.relu(self.fg_bn(self.fg_l(z))),
+
+        h = F.reshape(
+            F.relu(self.fg_bn0(self.fg_l0(z))),
             (batchsize, self.ch, self.bottom_time, self.bottom_width, self.bottom_width))
-        fg_h = self.fg_block1(fg_h)
-        fg_h = self.fg_block2(fg_h)
-        fg_h = self.fg_block3(fg_h)
+        h = self.fg_block1(h)
+        h = self.fg_block2(h)
+        h = self.fg_block3(h)
         # TODO: シグモイド関数をかけたあとにスパースさせる
         # we also add to the objective a small sparsity prior on the mask λ||m(z)|| for λ = 0.1
-        mask = F.sigmoid(self.m_dc(fg_h))
-        fg = F.tanh(self.fg_dc(fg_h))
+        mask = F.sigmoid(self.m_dc4(h))
+        fg = F.tanh(self.fg_dc4(h))
+        return fg, mask
 
-        # Background
-        bg_h = F.reshape(F.relu(self.bg_bn(self.bg_l(z))),
+    def background(self, z):
+        batchsize = len(z)
+
+        h = F.reshape(F.relu(self.bg_bn0(self.bg_l0(z))),
                          (batchsize, self.ch, self.bottom_width, self.bottom_width))
-        bg_h = self.bg_block1(bg_h)
-        bg_h = self.bg_block2(bg_h)
-        bg_h = self.bg_block3(bg_h)
-        bg = F.tanh(self.bg_dc(bg_h))
+        h = self.bg_block1(h)
+        h = self.bg_block2(h)
+        h = self.bg_block3(h)
+        return F.tanh(self.bg_dc4(h))
 
-        # Generated Video
-        # TODO: ハードコーディングをやめる
-        # mask shape: (batchsize, 1, 32, 64, 64) -> (batchsize, 3, 32, 64, 64)
+    def __call__(self, z):
+        batchsize = len(z)
+
+        fg, mask = self.foreground(z)
         mask = F.tile(mask, (1, 3, 1, 1, 1))
-        # bg shape: (batchsize, 3, 64, 64) -> (batchsize, 3, 32, 64, 64)
-        bg = F.tile(F.reshape(bg, (batchsize, 3, 1, 64, 64)), (1, 1, 32, 1, 1))
+
+        bg = self.background(z)
+        # TODO: ハードコーディングをやめる
+        bg = F.reshape(bg, (batchsize, 3, 1, 64, 64))
+        bg = F.tile(bg, (1, 1, 32, 1, 1))
+
         x = mask * fg + (1 - mask) * bg
         return x
 
