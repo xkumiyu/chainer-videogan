@@ -2,6 +2,18 @@
 
 Chainer implementation of [Generating Videos with Scene Dynamics](http://carlvondrick.com/tinyvideo/).
 
+# Requrement
+
+* Python 3.6
+* FFmpeg
+* OpenCV
+
+# Install
+
+```
+pip install -r requirements/base.txt
+```
+
 # Usage
 
 ```
