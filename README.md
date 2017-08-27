@@ -2,7 +2,7 @@
 
 Chainer implementation of [Generating Videos with Scene Dynamics](http://carlvondrick.com/tinyvideo/).
 
-# Requrement
+# Requirements
 
 * Python 3.6
 * FFmpeg
