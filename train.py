@@ -26,8 +26,8 @@ def main():
                         help='Directory to output the result')
     parser.add_argument('--resume', '-r', default='',
                         help='Resume the training from snapshot')
-    # parser.add_argument('--seed', type=int, default=0,
-    #                     help='Random seed of z at visualization stage')
+    parser.add_argument('--seed', type=int, default=0,
+                        help='Random seed of z at visualization stage')
     parser.add_argument('--snapshot_interval', type=int, default=1000,
                         help='Interval of snapshot')
     parser.add_argument('--display_interval', type=int, default=100,
