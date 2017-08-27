@@ -45,7 +45,8 @@ class Generator(chainer.Chain):
                 self.noise_dim, self.bottom_time * self.bottom_width * self.bottom_width * self.ch)
             self.fg_bn0 = L.BatchNormalization(
                 self.bottom_time * self.bottom_width * self.bottom_width * self.ch)
-            self.fg_block1 = Block3D(ch, ch // 2, ksize=(2, 4, 4))
+            # self.fg_block1 = Block3D(ch, ch // 2, ksize=(2, 4, 4))
+            self.fg_block1 = Block3D(ch, ch // 2, ksize=(4, 4, 4))
             self.fg_block2 = Block3D(ch // 2, ch // 4)
             self.fg_block3 = Block3D(ch // 4, ch // 8)
             self.fg_dc4 = L.DeconvolutionND(
