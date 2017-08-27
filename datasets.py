@@ -41,8 +41,10 @@ class VideoDataset(chainer.dataset.DatasetMixin):
         """
         path = os.path.join(self._root, self._paths[i])
         video = _read_video_as_array(path, self._dtype)
-        return video.transpose(3, 0, 2, 1)
 
+        if len(video.shape) != 4:
+            raise ValueError('invalid video.shape')
+        return video.transpose(3, 0, 2, 1)
 
 class PreprocessedDataset(chainer.dataset.DatasetMixin):
 

@@ -33,7 +33,7 @@ def out_generated_video(gen, dis, n_videos, seed, dst):
         x = np.asarray(np.clip(x * 255, 0.0, 255.0), dtype=np.uint8)
         x = x.transpose(0, 2, 3, 4, 1)
 
-        preview_dir = os.path.join(dst, 'preview', trainer.updater.iteration)
+        preview_dir = os.path.join(dst, 'preview', 'iter_{}'.format(trainer.updater.iteration))
         if not os.path.exists(preview_dir):
             os.makedirs(preview_dir)
         for i in range(x.shape[0]):
