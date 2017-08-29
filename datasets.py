@@ -46,6 +46,7 @@ class VideoDataset(chainer.dataset.DatasetMixin):
             raise ValueError('invalid video.shape')
         return video.transpose(3, 0, 2, 1)
 
+
 class PreprocessedDataset(chainer.dataset.DatasetMixin):
 
     def __init__(self, paths, root, frame_size=32, image_size=(64, 64)):

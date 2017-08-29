@@ -5,7 +5,6 @@ import numpy as np
 import chainer
 from chainer.dataset import convert
 from chainer import Variable
-from datetime import datetime as dt
 
 from net import Discriminator
 from net import Generator
