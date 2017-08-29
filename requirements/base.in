@@ -1,4 +1,4 @@
 chainer
-cupy
+matplotlib
 opencv-python
 ffmpy
