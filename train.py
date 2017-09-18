@@ -35,11 +35,6 @@ def main():
     parser.add_argument('--debug', '-d', action='store_true')
     args = parser.parse_args()
 
-    if args.debug:
-        chainer.config.debug = True
-        print('Debug MODE')
-        print()
-
     print('GPU: {}'.format(args.gpu))
     print('# Minibatch-size: {}'.format(args.batchsize))
     print('# epoch: {}'.format(args.epoch))
@@ -96,6 +91,10 @@ def main():
         chainer.serializers.load_npz(args.resume, trainer)
 
     trainer.run()
+
+    if args.gpu >= 0:
+        gen.to_cpu()
+    chainer.serializers.save_npz(os.path.join(args.out, 'gen.npz'), gen)
 
 
 if __name__ == '__main__':

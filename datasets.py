@@ -4,7 +4,6 @@ import numpy as np
 import six
 import cv2
 import chainer
-# import chainer.functions as F
 
 
 def _read_video_as_array(path, dtype):
@@ -67,7 +66,6 @@ class PreprocessedDataset(chainer.dataset.DatasetMixin):
             print('Warning: Frame size of video[{}] is not equal to {}.'.format(i, self.frame_size))
 
         video = video[:self.frame_size]
-        # video = F.resize_images(video, self.image_size)
         video = 2 * video / 255. - 1
 
         return video

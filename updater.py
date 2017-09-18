@@ -3,10 +3,6 @@ import chainer.functions as F
 from chainer import Variable
 
 
-# def _normalize(x, _min=0., _max=255.):
-#     return 2. * (x - _min) / (_max - _min) - 1
-
-
 class VideoGANUpdater(chainer.training.StandardUpdater):
 
     def __init__(self, *args, **kwargs):

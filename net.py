@@ -11,7 +11,6 @@ class Generator(chainer.Chain):
         with self.init_scope():
             w = chainer.initializers.Normal(0.01)
 
-            self.fg_l0 = L.Linear(None, 2 * 4 * 4 * 512, initialW=w)
             self.fg_dc0 = L.DeconvolutionND(3, 100, 512, (2, 4, 4), initialW=w)
             self.fg_dc1 = L.DeconvolutionND(3, 512, 256, 4, 2, 1, initialW=w)
             self.fg_dc2 = L.DeconvolutionND(3, 256, 128, 4, 2, 1, initialW=w)
@@ -23,7 +22,6 @@ class Generator(chainer.Chain):
             self.fg_bn2 = L.BatchNormalization(128)
             self.fg_bn3 = L.BatchNormalization(64)
 
-            self.bg_l0 = L.Linear(None, 4 * 4 * 512, initialW=w)
             self.bg_dc0 = L.Deconvolution2D(100, 512, 4, initialW=w)
             self.bg_dc1 = L.Deconvolution2D(512, 256, 4, 2, 1, initialW=w)
             self.bg_dc2 = L.Deconvolution2D(256, 128, 4, 2, 1, initialW=w)
@@ -35,8 +33,8 @@ class Generator(chainer.Chain):
             self.bg_bn3 = L.BatchNormalization(64)
 
     def make_noize(self, batchsize):
-        return np.random.randn(batchsize * self.noise_dim)\
-            .reshape(batchsize, self.noise_dim).astype(np.float32)
+        return np.random.randn(batchsize * 100)\
+            .reshape(batchsize, 100).astype(np.float32)
 
     def foreground(self, z):
         """
