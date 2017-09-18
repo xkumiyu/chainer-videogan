@@ -9,7 +9,7 @@ import chainer.cuda
 from chainer import Variable
 
 
-def _write_video(x, filepath, fps=25.0, codecs='MJPG'):
+def _write_video(x, filepath, fps=25.0, codecs):
     frames, height, width, ch = x.shape
 
     fourcc = cv2.VideoWriter_fourcc(*codecs)
@@ -19,7 +19,7 @@ def _write_video(x, filepath, fps=25.0, codecs='MJPG'):
     video.release()
 
 
-def out_generated_video(gen, dis, n_videos, seed, dst, codecs):
+def out_generated_video(gen, dis, n_videos, seed, dst, codecs, ext):
     @chainer.training.make_extension()
     def make_video(trainer):
         np.random.seed(seed)
@@ -37,6 +37,6 @@ def out_generated_video(gen, dis, n_videos, seed, dst, codecs):
         if not os.path.exists(preview_dir):
             os.makedirs(preview_dir)
         for i in range(x.shape[0]):
-            preview_path = os.path.join(preview_dir, '{}.mp4'.format(i))
+            preview_path = os.path.join(preview_dir, '{}.{}'.format(i, ext))
             _write_video(x[i], preview_path, codecs=codecs)
     return make_video

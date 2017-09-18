@@ -21,7 +21,7 @@ def main():
     parser.add_argument('--gpu', '-g', type=int, default=-1,
                         help='GPU ID (negative value indicates CPU)')
     parser.add_argument('--dataset', '-i', required=True,
-                        help='Directory of video files.')
+                        help='Directory of video files')
     parser.add_argument('--out', '-o', default='result',
                         help='Directory to output the result')
     parser.add_argument('--resume', '-r', default='',
@@ -32,8 +32,10 @@ def main():
                         help='Interval of snapshot')
     parser.add_argument('--display_interval', type=int, default=100,
                         help='Interval of displaying log to console')
-    parser.add_argument('--codecs', default='MJPG',
+    parser.add_argument('--video_codecs', default='H264',
                         help='Video Codec')
+    parser.add_argument('--video_ext', default='avi',
+                        help='Extension of output video files')
     args = parser.parse_args()
 
     print('GPU: {}'.format(args.gpu))
@@ -85,7 +87,9 @@ def main():
     ]), trigger=display_interval)
     trainer.extend(extensions.ProgressBar(update_interval=10))
     trainer.extend(
-        out_generated_video(gen, dis, 5, args.seed, args.out, args.codecs),
+        out_generated_video(
+            gen, dis, 5, args.seed, args.out,
+            args.video_codecs, args.video_ext),
         trigger=snapshot_interval)
 
     if args.resume:
