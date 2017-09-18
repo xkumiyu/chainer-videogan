@@ -32,7 +32,8 @@ def main():
                         help='Interval of snapshot')
     parser.add_argument('--display_interval', type=int, default=100,
                         help='Interval of displaying log to console')
-    parser.add_argument('--debug', '-d', action='store_true')
+    parser.add_argument('--codecs', default='MJPG',
+                        help='Video Codec')
     args = parser.parse_args()
 
     print('GPU: {}'.format(args.gpu))
@@ -84,7 +85,7 @@ def main():
     ]), trigger=display_interval)
     trainer.extend(extensions.ProgressBar(update_interval=10))
     trainer.extend(
-        out_generated_video(gen, dis, 5, args.seed, args.out),
+        out_generated_video(gen, dis, 5, args.seed, args.out, args.codecs),
         trigger=snapshot_interval)
 
     if args.resume:

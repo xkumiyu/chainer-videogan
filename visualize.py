@@ -19,7 +19,7 @@ def _write_video(x, filepath, fps=25.0, codecs='MJPG'):
     video.release()
 
 
-def out_generated_video(gen, dis, n_videos, seed, dst):
+def out_generated_video(gen, dis, n_videos, seed, dst, codecs):
     @chainer.training.make_extension()
     def make_video(trainer):
         np.random.seed(seed)
@@ -38,5 +38,5 @@ def out_generated_video(gen, dis, n_videos, seed, dst):
             os.makedirs(preview_dir)
         for i in range(x.shape[0]):
             preview_path = os.path.join(preview_dir, '{}.mp4'.format(i))
-            _write_video(x[i], preview_path)
+            _write_video(x[i], preview_path, codecs=codecs)
     return make_video
