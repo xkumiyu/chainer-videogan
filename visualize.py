@@ -9,7 +9,7 @@ import chainer.cuda
 from chainer import Variable
 
 
-def _write_video(x, filepath, fps=25.0, codecs):
+def _write_video(x, filepath, codecs, fps=25.0):
     frames, height, width, ch = x.shape
 
     fourcc = cv2.VideoWriter_fourcc(*codecs)
@@ -38,5 +38,5 @@ def out_generated_video(gen, dis, n_videos, seed, dst, codecs, ext):
             os.makedirs(preview_dir)
         for i in range(x.shape[0]):
             preview_path = os.path.join(preview_dir, '{}.{}'.format(i, ext))
-            _write_video(x[i], preview_path, codecs=codecs)
+            _write_video(x[i], preview_path, codecs)
     return make_video
