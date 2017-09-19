@@ -1,7 +1,17 @@
 import numpy as np
+
 import chainer
+from chainer import cuda
 import chainer.functions as F
 import chainer.links as L
+
+
+def add_noise(h, sigma=0.2):
+    xp = cuda.get_array_module(h.data)
+    if chainer.config.train:
+        return h + sigma * xp.random.randn(*h.shape)
+    else:
+        return h
 
 
 class Generator(chainer.Chain):
@@ -48,9 +58,7 @@ class Generator(chainer.Chain):
         h = F.relu(self.fg_bn1(self.fg_dc1(h)))
         h = F.relu(self.fg_bn2(self.fg_dc2(h)))
         h = F.relu(self.fg_bn3(self.fg_dc3(h)))
-        # TODO: シグモイド関数をかけたあとにスパースさせる
-        # we also add to the objective a small sparsity prior on the mask λ||m(z)|| for λ = 0.1
-        mask = F.sigmoid(self.m_dc4(h))
+        mask = F.dropout(F.sigmoid(self.m_dc4(h)), ratio=0.5)
         fg = F.tanh(self.fg_dc4(h))
         return fg, mask
 
@@ -108,7 +116,7 @@ class Discriminator(chainer.Chain):
         input x shape:  (batchsize, 3, 32, 64, 64)
         output y shape: (batchsize, 1)
         """
-        h = F.leaky_relu(self.conv0(x))
+        h = F.leaky_relu(self.conv0(add_noise(x)))
         h = F.leaky_relu(self.bn1(self.conv1(h)))
         h = F.leaky_relu(self.bn2(self.conv2(h)))
         h = F.leaky_relu(self.bn3(self.conv3(h)))
