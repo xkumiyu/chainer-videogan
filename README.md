@@ -11,7 +11,7 @@ Chainer implementation of [Generating Videos with Scene Dynamics](http://carlvon
 # Installation
 
 ```
-pip install -r requirements/base.txt
+pip install -r requirements.txt
 ```
 
 # Usage
@@ -19,11 +19,11 @@ pip install -r requirements/base.txt
 ## Preprocess
 
 ```
-python preprocess.py <input data directory> <outpu data directory>
+python preprocess.py <input data directory> <output data directory>
 ```
 
 ## Train
 
 ```
-python train.py -i <input data directory>
+python train.py -i <input data list file>
 ```

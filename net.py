@@ -80,7 +80,7 @@ class Generator(chainer.Chain):
         input z shape:  (batchsize, 100) or (batchsize, 1024, 4, 4)
         output x shape: (batchsize, 3, 32, 64, 64)
         """
-        # TODO: (batchsize, 1024, 4, 4)に対応
+        # TODO: Correspond to (batchsize, 1024, 4, 4)
         batchsize = len(z)
 
         fg, mask = self.foreground(z)

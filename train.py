@@ -8,8 +8,19 @@ from chainer.training import extensions
 from net import Discriminator
 from net import Generator
 from updater import VideoGANUpdater
-from datasets import PreprocessedDataset
+from datasets import VideoDataset
 from visualize import out_generated_video
+
+
+def _get_images_paths(dataset, root):
+    path_list = []
+    with open(dataset) as paths_file:
+        for path in paths_file:
+            path = os.path.join(root, path.strip())
+            all_files = os.listdir(path)
+            image_files = [os.path.join(path, f) for f in all_files if ('png' in f or 'jpg' in f)]
+            path_list.append(image_files)
+    return path_list
 
 
 def main():
@@ -21,7 +32,9 @@ def main():
     parser.add_argument('--gpu', '-g', type=int, default=-1,
                         help='GPU ID (negative value indicates CPU)')
     parser.add_argument('--dataset', '-i', required=True,
-                        help='Directory of video files')
+                        help='Directory list of images files')
+    parser.add_argument('--root', default='.',
+                        help='Path of images files')
     parser.add_argument('--out', '-o', default='result',
                         help='Directory to output the result')
     parser.add_argument('--resume', '-r', default='',
@@ -58,10 +71,9 @@ def main():
     opt_gen = make_optimizer(gen)
     opt_dis = make_optimizer(dis)
 
-    all_files = os.listdir(args.dataset)
-    video_files = [f for f in all_files if ('mp4' in f)]
-    train = PreprocessedDataset(paths=video_files, root=args.dataset)
+    train = VideoDataset(paths=_get_images_paths(args.dataset, args.root))
     print('# data-size: {}'.format(len(train)))
+    print('# data-shape: {}'.format(train[0].shape))
     print('')
 
     train_iter = chainer.iterators.SerialIterator(train, args.batchsize)
