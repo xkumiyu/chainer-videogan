@@ -1,14 +1,14 @@
 import os
 import unittest
 
-import numpy as np
 import chainer
 from chainer.dataset import convert
 from chainer import Variable
+import numpy as np
 
+from datasets import PreprocessedDataset
 from net import Discriminator
 from net import Generator
-from datasets import PreprocessedDataset
 
 
 class TestDetaset(unittest.TestCase):

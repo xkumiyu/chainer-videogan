@@ -1,12 +1,10 @@
 import os
 
-import numpy as np
-# from PIL import Image
-import cv2
-
 import chainer
 import chainer.cuda
 from chainer import Variable
+import cv2
+import numpy as np
 
 
 def _write_video(x, filepath, codecs, fps=25.0):

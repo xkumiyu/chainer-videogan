@@ -5,10 +5,10 @@ import chainer
 from chainer import training
 from chainer.training import extensions
 
+from datasets import VideoDataset
 from net import Discriminator
 from net import Generator
 from updater import VideoGANUpdater
-from datasets import VideoDataset
 from visualize import out_generated_video
 
 

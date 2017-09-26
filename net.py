@@ -47,10 +47,12 @@ class Generator(chainer.Chain):
             .reshape(batchsize, 100).astype(np.float32)
 
     def foreground(self, z):
-        """
+        """Foreground
+
         input z shape:     (batchsize, 100)
         output fg shape:   (batchsize, 3, 32, 64, 64)
         output mask shape: (batchsize, 1, 32, 64, 64)
+
         """
         batchsize = len(z)
         z = z.reshape(batchsize, 100, 1, 1, 1)
@@ -63,9 +65,11 @@ class Generator(chainer.Chain):
         return fg, mask
 
     def background(self, z):
-        """
+        """Background
+
         input z shape:  (batchsize, 100)
         output h shape: (batchsize, 3, 64, 64)
+
         """
         batchsize = len(z)
         z = z.reshape(batchsize, 100, 1, 1)
@@ -76,11 +80,13 @@ class Generator(chainer.Chain):
         return F.tanh(self.bg_dc4(h))
 
     def __call__(self, z):
-        """
+        """Call
+
         input z shape:  (batchsize, 100) or (batchsize, 1024, 4, 4)
         output x shape: (batchsize, 3, 32, 64, 64)
+
         """
-        # TODO: Correspond to (batchsize, 1024, 4, 4)
+        # TODO(@xkumiyu) Correspond to (batchsize, 1024, 4, 4)
         batchsize = len(z)
 
         fg, mask = self.foreground(z)
@@ -112,9 +118,11 @@ class Discriminator(chainer.Chain):
             self.bn4 = L.BatchNormalization(512)
 
     def __call__(self, x):
-        """
+        """Call
+
         input x shape:  (batchsize, 3, 32, 64, 64)
         output y shape: (batchsize, 1)
+
         """
         h = F.leaky_relu(self.conv0(add_noise(x)))
         h = F.leaky_relu(self.bn1(self.conv1(h)))

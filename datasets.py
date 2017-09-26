@@ -1,14 +1,12 @@
 import os
 
+import chainer
 import numpy as np
 from PIL import Image
-import chainer
 
 
 def _read_images_as_array(paths, root, dtype):
-    """
-    return video shape: (frame, height, width, ch)
-    """
+    """return video shape: (frame, height, width, ch)"""
     video = []
     for path in paths:
         path = os.path.join(root, path)
@@ -24,9 +22,7 @@ def _read_images_as_array(paths, root, dtype):
 
 
 class VideoDataset(chainer.dataset.DatasetMixin):
-    """
-    paths: 2-dim array
-    """
+    """paths: 2-dim array"""
     def __init__(self, paths, root='.', dtype=np.float32):
         self._paths = paths
         self._root = root
@@ -36,9 +32,7 @@ class VideoDataset(chainer.dataset.DatasetMixin):
         return len(self._paths)
 
     def get_example(self, i):
-        """
-        return video shape: (ch, frame, width, height)
-        """
+        """return video shape: (ch, frame, width, height)"""
         video = _read_images_as_array(self._paths[i], self._root, self._dtype)
 
         if len(video.shape) != 4:
